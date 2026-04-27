@@ -20,8 +20,6 @@ export default function Index() {
     return <Redirect href="/(auth)/login" />;
   }
 
-  // 'locked' or 'authenticated' — both go to the app; the lock screen
-  // is handled inside the (app) navigator
   return <Redirect href="/(app)/home" />;
 }
 

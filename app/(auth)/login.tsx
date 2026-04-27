@@ -14,21 +14,15 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import colors from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
-import { getSupportedBiometricTypes } from '@/hooks/useBiometrics';
 
 export default function LoginScreen() {
-  const { status, signIn, unlockWithBiometrics, biometricsAvailable } = useAuth();
+  const { status, signIn } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [biometricLabel, setBiometricLabel] = useState('Biometrics');
   const passwordRef = useRef<TextInput>(null);
-
-  React.useEffect(() => {
-    getSupportedBiometricTypes().then(setBiometricLabel);
-  }, []);
 
   if (status === 'authenticated') return <Redirect href="/(app)/home" />;
 
@@ -47,101 +41,66 @@ export default function LoginScreen() {
     }
   }, [email, password, signIn]);
 
-  const handleBiometricUnlock = useCallback(async () => {
-    const success = await unlockWithBiometrics();
-    if (!success) {
-      Alert.alert('Authentication failed', 'Biometric verification was unsuccessful.');
-    }
-  }, [unlockWithBiometrics]);
-
-  // Show biometric unlock when session is locked
-  const showBiometricUnlock = status === 'locked' && biometricsAvailable;
-
   return (
     <SafeAreaView style={styles.safe}>
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          keyboardShouldPersistTaps="handled"
-          automaticallyAdjustKeyboardInsets={true}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.brand}>EarlyOn</Text>
-            <Text style={styles.title}>
-              {showBiometricUnlock ? 'Welcome back' : 'Sign in'}
-            </Text>
-            <Text style={styles.subtitle}>
-              {showBiometricUnlock
-                ? 'Use biometrics or enter your password to continue'
-                : 'Enter your credentials to continue'}
-            </Text>
-          </View>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets={true}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.brand}>EarlyOn</Text>
+          <Text style={styles.title}>Sign in</Text>
+          <Text style={styles.subtitle}>Enter your credentials to continue</Text>
+        </View>
 
-          {/* Form */}
-          <View style={styles.form}>
-            {showBiometricUnlock && (
-              <Button
-                label={`Sign in with ${biometricLabel}`}
-                variant="secondary"
-                onPress={handleBiometricUnlock}
-              />
-            )}
+        <View style={styles.form}>
+          <Input
+            label="Email"
+            value={email}
+            onChangeText={setEmail}
+            placeholder="you@example.com"
+            keyboardType="email-address"
+            textContentType="emailAddress"
+            autoComplete="email"
+            returnKeyType="next"
+            onSubmitEditing={() => passwordRef.current?.focus()}
+          />
 
-            {showBiometricUnlock && (
-              <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerLabel}>or use password</Text>
-                <View style={styles.dividerLine} />
-              </View>
-            )}
+          <Input
+            ref={passwordRef}
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Enter your password"
+            secureTextEntry={!showPassword}
+            textContentType="password"
+            autoComplete="current-password"
+            returnKeyType="done"
+            onSubmitEditing={handleSignIn}
+            rightIcon={
+              <Text style={styles.showToggle}>{showPassword ? 'Hide' : 'Show'}</Text>
+            }
+            onRightIconPress={() => setShowPassword((v) => !v)}
+          />
 
-            <Input
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              placeholder="you@example.com"
-              keyboardType="email-address"
-              textContentType="emailAddress"
-              autoComplete="email"
-              returnKeyType="next"
-              onSubmitEditing={() => passwordRef.current?.focus()}
-            />
+          <Pressable style={styles.forgotRow}>
+            <Text style={styles.forgotText}>Forgot password?</Text>
+          </Pressable>
 
-            <Input
-              ref={passwordRef}
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Enter your password"
-              secureTextEntry={!showPassword}
-              textContentType="password"
-              autoComplete="current-password"
-              returnKeyType="done"
-              onSubmitEditing={handleSignIn}
-              rightIcon={
-                <Text style={styles.showToggle}>{showPassword ? 'Hide' : 'Show'}</Text>
-              }
-              onRightIconPress={() => setShowPassword((v) => !v)}
-            />
+          <Button label="Sign In" onPress={handleSignIn} loading={loading} />
+        </View>
 
-            <Pressable style={styles.forgotRow}>
-              <Text style={styles.forgotText}>Forgot password?</Text>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Don't have an account? </Text>
+          <Link href="/(auth)/register" asChild>
+            <Pressable>
+              <Text style={styles.footerLink}>Sign Up</Text>
             </Pressable>
-
-            <Button label="Sign In" onPress={handleSignIn} loading={loading} />
-          </View>
-
-          {/* Footer */}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
-            <Link href="/(auth)/register" asChild>
-              <Pressable>
-                <Text style={styles.footerLink}>Sign Up</Text>
-              </Pressable>
-            </Link>
-          </View>
-        </ScrollView>
+          </Link>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -182,21 +141,6 @@ const styles = StyleSheet.create({
   },
   form: {
     flex: 1,
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 20,
-    gap: 10,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.border,
-  },
-  dividerLabel: {
-    fontSize: 13,
-    color: colors.textSecondary,
   },
   showToggle: {
     fontSize: 14,

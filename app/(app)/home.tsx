@@ -1,28 +1,12 @@
-import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '@/components/ui/Button';
 import colors from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function HomeScreen() {
-  const { user, signOut, promptEnableBiometrics, biometricsAvailable } = useAuth();
-  const [biometricLoading, setBiometricLoading] = useState(false);
-
-  const handleEnableBiometrics = async () => {
-    setBiometricLoading(true);
-    try {
-      const enabled = await promptEnableBiometrics();
-      Alert.alert(
-        enabled ? 'Biometrics enabled' : 'Setup cancelled',
-        enabled
-          ? 'You can now use biometrics to unlock the app.'
-          : 'You can enable biometrics later from settings.'
-      );
-    } finally {
-      setBiometricLoading(false);
-    }
-  };
+  const { user, signOut } = useAuth();
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] ?? 'there';
 
@@ -47,19 +31,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.actions}>
-          {biometricsAvailable && (
-            <Button
-              label="Enable biometric sign-in"
-              variant="secondary"
-              onPress={handleEnableBiometrics}
-              loading={biometricLoading}
-            />
-          )}
-          <Button
-            label="Sign Out"
-            variant="ghost"
-            onPress={signOut}
-          />
+          <Button label="Sign Out" variant="ghost" onPress={signOut} />
         </View>
       </View>
     </SafeAreaView>
