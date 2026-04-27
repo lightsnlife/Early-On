@@ -39,36 +39,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [biometricsAvailable, setBiometricsAvailable] = useState(false);
   const appState = useRef(AppState.currentState);
 
-  const applySession = useCallback(async (newSession: Session | null) => {
-    setSession(newSession);
-    if (!newSession) {
-      setStatus('unauthenticated');
-      return;
-    }
-    const enabled = await isBiometricsEnabled();
-    setStatus(enabled ? 'locked' : 'authenticated');
-  }, []);
-
   useEffect(() => {
     let mounted = true;
 
     (async () => {
       const available = await isBiometricsAvailable();
       if (mounted) setBiometricsAvailable(available);
-
-      const { data } = await supabase.auth.getSession();
-      if (mounted) await applySession(data.session);
     })();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      if (mounted) applySession(newSession);
+    const { data: listener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      if (!mounted) return;
+
+      if (!newSession) {
+        setSession(null);
+        setStatus('unauthenticated');
+        return;
+      }
+
+      // TOKEN_REFRESHED must not re-lock an already-unlocked session.
+      // Resolve biometrics BEFORE setting state so both setSession + setStatus
+      // fire in the same synchronous batch — prevents an intermediate render
+      // where session exists but status is still 'unauthenticated'.
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+        const enabled = await isBiometricsEnabled();
+        if (!mounted) return;
+        setSession(newSession);
+        setStatus(enabled ? 'locked' : 'authenticated');
+      } else {
+        setSession(newSession);
+      }
     });
 
     return () => {
       mounted = false;
       listener.subscription.unsubscribe();
     };
-  }, [applySession]);
+  }, []);
 
   // Re-lock when the app comes back to the foreground
   useEffect(() => {
