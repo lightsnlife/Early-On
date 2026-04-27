@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ECard, EChip, EText, CategoryCard } from '@/components/ui/components';
 import Button from '@/components/ui/Button';
-import colors from '@/constants/colors';
+import { palette } from '@/components/ui/tokens';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function HomeScreen() {
@@ -12,28 +13,80 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Top bar */}
         <View style={styles.topBar}>
-          <Text style={styles.brand}>EarlyOn</Text>
+          <Text style={styles.brand}>
+            early<Text style={styles.brandAccent}>on</Text>
+          </Text>
         </View>
 
-        <View style={styles.content}>
-          <Text style={styles.greeting}>Hello, {firstName}!</Text>
-          <Text style={styles.subtitle}>You're signed in as</Text>
-          <Text style={styles.email}>{user?.email}</Text>
-
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Your dashboard is being built</Text>
-            <Text style={styles.cardBody}>
-              Features and modules will appear here as they are added to the project.
-            </Text>
-          </View>
+        {/* Greeting */}
+        <View style={styles.greetingRow}>
+          <EText variant="h2" style={styles.greeting}>
+            Hello, {firstName}! 👋
+          </EText>
+          <EText variant="bodyLg" color={palette.mid} style={styles.greetingSub}>
+            {user?.email}
+          </EText>
         </View>
 
-        <View style={styles.actions}>
+        {/* Age chips */}
+        <View style={styles.chipRow}>
+          <EChip label="Newborn" color="lavender" />
+          <EChip label="Toddler" color="mint" />
+          <EChip label="School age" color="butter" />
+        </View>
+
+        {/* Dashboard placeholder card */}
+        <ECard style={styles.dashCard}>
+          <EText variant="h4" style={{ marginBottom: 8 }}>
+            Your dashboard is on its way
+          </EText>
+          <EText variant="body" color={palette.mid} style={{ lineHeight: 22 }}>
+            Features and modules will appear here as they are added to the project.
+          </EText>
+        </ECard>
+
+        {/* Category grid */}
+        <EText variant="h3" style={styles.sectionTitle}>Explore</EText>
+        <View style={styles.categoryGrid}>
+          <CategoryCard
+            icon="🍼"
+            name="Feeding"
+            subtitle="Nutrition & schedules"
+            color="rose"
+          />
+          <CategoryCard
+            icon="😴"
+            name="Sleep"
+            subtitle="Routines & tracking"
+            color="lavender"
+          />
+        </View>
+        <View style={styles.categoryGrid}>
+          <CategoryCard
+            icon="🌱"
+            name="Development"
+            subtitle="Milestones & activities"
+            color="mint"
+          />
+          <CategoryCard
+            icon="❤️"
+            name="Wellbeing"
+            subtitle="Health & safety"
+            color="peach"
+          />
+        </View>
+
+        {/* Sign out */}
+        <View style={styles.signOutRow}>
           <Button label="Sign Out" variant="ghost" onPress={signOut} />
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -41,63 +94,54 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: palette.pageBg,
   },
-  container: {
-    flex: 1,
+  scroll: {
     paddingHorizontal: 24,
+    paddingBottom: 40,
   },
   topBar: {
     paddingTop: 16,
-    paddingBottom: 8,
+    paddingBottom: 4,
   },
   brand: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: colors.primaryDark,
-    letterSpacing: 0.5,
+    fontSize: 26,
+    fontFamily: 'Nunito-Black',
+    color: palette.dark,
+    letterSpacing: -0.3,
   },
-  content: {
-    flex: 1,
-    paddingTop: 32,
+  brandAccent: {
+    color: palette.rose500,
+  },
+  greetingRow: {
+    marginTop: 28,
+    marginBottom: 16,
+    gap: 4,
   },
   greeting: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    marginBottom: 4,
+    letterSpacing: -0.3,
   },
-  subtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    marginBottom: 2,
+  greetingSub: {
+    marginTop: 2,
   },
-  email: {
-    fontSize: 15,
-    color: colors.primary,
-    fontWeight: '500',
+  chipRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 24,
+  },
+  dashCard: {
     marginBottom: 32,
   },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
+  sectionTitle: {
+    marginBottom: 14,
+    letterSpacing: -0.2,
   },
-  cardTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: 8,
+  categoryGrid: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 12,
   },
-  cardBody: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    lineHeight: 20,
-  },
-  actions: {
-    paddingBottom: 24,
-    gap: 10,
+  signOutRow: {
+    marginTop: 32,
   },
 });

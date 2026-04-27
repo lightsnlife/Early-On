@@ -7,7 +7,7 @@ import {
   type TextInputProps,
   View,
 } from 'react-native';
-import colors from '@/constants/colors';
+import { palette } from '../ui/tokens';
 
 interface InputProps extends TextInputProps {
   label: string;
@@ -33,7 +33,7 @@ const Input = forwardRef<TextInput, InputProps>(
           <TextInput
             ref={ref}
             style={[styles.input, style]}
-            placeholderTextColor={colors.textDisabled}
+            placeholderTextColor={palette.soft}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             autoCapitalize="none"
@@ -59,43 +59,46 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textPrimary,
-    marginBottom: 6,
+    fontSize: 13,
+    fontFamily: 'NunitoSans-SemiBold',
+    color: palette.mid,
+    marginBottom: 7,
+    letterSpacing: 0.2,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: colors.border,
-    borderRadius: 10,
-    backgroundColor: colors.surface,
+    borderColor: 'rgba(139,117,212,0.18)',
+    borderRadius: 14,
+    backgroundColor: palette.cardBg,
     paddingHorizontal: 14,
   },
   inputWrapperFocused: {
-    borderColor: colors.borderFocus,
-    shadowColor: colors.primary,
+    borderColor: palette.rose400,
+    shadowColor: palette.rose500,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
     elevation: 2,
   },
   inputWrapperError: {
-    borderColor: colors.error,
+    borderColor: palette.rose600,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color: colors.textPrimary,
+    fontSize: 15,
+    fontFamily: 'NunitoSans-Regular',
+    color: palette.dark,
     paddingVertical: 13,
   },
   rightIcon: {
     paddingLeft: 8,
   },
   errorText: {
-    marginTop: 4,
+    marginTop: 5,
     fontSize: 12,
-    color: colors.error,
+    fontFamily: 'NunitoSans-Regular',
+    color: palette.rose600,
   },
 });

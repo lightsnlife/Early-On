@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img">
+  <title>EarlyOn — animated loading icon</title>
+  <desc>EarlyOn app icon with veins that grow during app loading</desc>
+
+  <defs>
+    <!-- Each vein uses stroke-dasharray/dashoffset to animate drawing -->
+
+    <!-- Central vein length ≈ 93 -->
+    <style>
+      .vein { fill: none; stroke: #C8749A; stroke-linecap: round; }
+
+      /* Background fade-in */
+      .bg  { animation: fadeIn 0.4s ease forwards; }
+      .leaf { animation: fadeIn 0.5s 0.1s ease both; }
+
+      /* Central vein draws first */
+      .v-center {
+        stroke-width: 2.5; opacity: 0.55;
+        stroke-dasharray: 94; stroke-dashoffset: 94;
+        animation: draw 0.7s 0.4s cubic-bezier(.4,0,.2,1) forwards;
+      }
+
+      /* Left veins — staggered */
+      .v-l1 { stroke-width:1.8; opacity:0.40; stroke-dasharray:36; stroke-dashoffset:36; animation: draw 0.45s 1.0s cubic-bezier(.4,0,.2,1) forwards; }
+      .v-l2 { stroke-width:1.8; opacity:0.40; stroke-dasharray:46; stroke-dashoffset:46; animation: draw 0.45s 1.15s cubic-bezier(.4,0,.2,1) forwards; }
+      .v-l3 { stroke-width:1.6; opacity:0.35; stroke-dasharray:38; stroke-dashoffset:38; animation: draw 0.40s 1.30s cubic-bezier(.4,0,.2,1) forwards; }
+      .v-l4 { stroke-width:1.4; opacity:0.30; stroke-dasharray:28; stroke-dashoffset:28; animation: draw 0.35s 1.45s cubic-bezier(.4,0,.2,1) forwards; }
+
+      /* Right veins — same stagger, offset by 0.07s from left for organic feel */
+      .v-r1 { stroke-width:1.8; opacity:0.40; stroke-dasharray:36; stroke-dashoffset:36; animation: draw 0.45s 1.07s cubic-bezier(.4,0,.2,1) forwards; }
+      .v-r2 { stroke-width:1.8; opacity:0.40; stroke-dasharray:46; stroke-dashoffset:46; animation: draw 0.45s 1.22s cubic-bezier(.4,0,.2,1) forwards; }
+      .v-r3 { stroke-width:1.6; opacity:0.35; stroke-dasharray:38; stroke-dashoffset:38; animation: draw 0.40s 1.37s cubic-bezier(.4,0,.2,1) forwards; }
+      .v-r4 { stroke-width:1.4; opacity:0.30; stroke-dasharray:28; stroke-dashoffset:28; animation: draw 0.35s 1.52s cubic-bezier(.4,0,.2,1) forwards; }
+
+      /* Subtle pulse after all veins are drawn */
+      .leaf-pulse {
+        animation: fadeIn 0.5s 0.1s ease both, pulse 1.8s 2.1s ease-in-out infinite;
+        transform-origin: 100px 112px;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+
+      @keyframes draw {
+        to { stroke-dashoffset: 0; }
+      }
+
+      @keyframes pulse {
+        0%,100% { transform: scale(1);   }
+        50%      { transform: scale(1.03); }
+      }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect class="bg" width="200" height="200" rx="46" fill="#E6F5F0"/>
+
+  <!-- Heart-leaf body -->
+  <path class="leaf-pulse"
+    d="M100 158
+       C68 138 34 112 34 82
+       C34 58 50 44 68 46
+       C80 47 92 56 100 66
+       C108 56 120 47 132 46
+       C150 44 166 58 166 82
+       C166 112 132 138 100 158Z"
+    fill="#F5B8CF"
+  />
+
+  <!-- Central vein -->
+  <path class="vein v-center" d="M100 66 Q100 110 100 158"/>
+
+  <!-- Left veins -->
+  <path class="vein v-l1" d="M100 88  Q82  80  66  72"/>
+  <path class="vein v-l2" d="M100 104 Q78  96  58  90"/>
+  <path class="vein v-l3" d="M100 120 Q82 114  66 110"/>
+  <path class="vein v-l4" d="M100 136 Q86 132  74 130"/>
+
+  <!-- Right veins -->
+  <path class="vein v-r1" d="M100 88  Q118  80 134  72"/>
+  <path class="vein v-r2" d="M100 104 Q122  96 142  90"/>
+  <path class="vein v-r3" d="M100 120 Q118 114 134 110"/>
+  <path class="vein v-r4" d="M100 136 Q114 132 126 130"/>
+</svg>

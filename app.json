@@ -11,20 +11,17 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1E3A5F"
+      "backgroundColor": "#EDE6F5"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.earlyon.app",
-      "infoPlist": {
-        "NSFaceIDUsageDescription": "Use Face ID to sign in securely to EarlyOn"
-      }
+      "bundleIdentifier": "com.earlyon.app"
     },
     "android": {
       "package": "com.earlyon.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1E3A5F"
+        "backgroundColor": "#EDE6F5"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
@@ -35,14 +32,7 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store",
-      "expo-font",
-      [
-        "expo-local-authentication",
-        {
-          "faceIDPermission": "Allow EarlyOn to use Face ID for secure sign-in."
-        }
-      ]
+      "expo-font"
     ]
   }
 }

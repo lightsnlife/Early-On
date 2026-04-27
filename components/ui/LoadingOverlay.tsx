@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import colors from '@/constants/colors';
+import { palette } from './tokens';
 
 interface LoadingOverlayProps {
   message?: string;
@@ -9,7 +9,7 @@ interface LoadingOverlayProps {
 export default function LoadingOverlay({ message }: LoadingOverlayProps) {
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color={colors.primary} />
+      <ActivityIndicator size="large" color={palette.rose500} />
       {!!message && <Text style={styles.message}>{message}</Text>}
     </View>
   );
@@ -18,7 +18,7 @@ export default function LoadingOverlay({ message }: LoadingOverlayProps) {
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.overlay,
+    backgroundColor: 'rgba(44,36,56,0.5)',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 999,
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   message: {
     marginTop: 12,
     fontSize: 15,
-    color: colors.surface,
-    fontWeight: '500',
+    fontFamily: 'NunitoSans-Regular',
+    color: palette.cardBg,
   },
 });

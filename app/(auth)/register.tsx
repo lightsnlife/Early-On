@@ -11,10 +11,10 @@ import {
   View,
 } from 'react-native';
 import { Link, Redirect } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import colors from '@/constants/colors';
+import { palette } from '@/components/ui/tokens';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface FormErrors {
@@ -52,6 +52,7 @@ function validate(
 
 export default function RegisterScreen() {
   const { status, signUp } = useAuth();
+  const insets = useSafeAreaInsets();
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -66,8 +67,7 @@ export default function RegisterScreen() {
   const passwordRef = useRef<TextInput>(null);
   const confirmRef = useRef<TextInput>(null);
 
-  if (status === 'authenticated') return <Redirect href="/(app)/home" />;
-
+  // All hooks must be declared before any conditional return
   const handleRegister = useCallback(async () => {
     const validationErrors = validate(fullName, email, password, confirmPassword);
     setErrors(validationErrors);
@@ -88,156 +88,153 @@ export default function RegisterScreen() {
     }
   }, [fullName, email, password, confirmPassword, signUp]);
 
+  if (status === 'authenticated') return <Redirect href="/(app)/home" />;
+
   return (
-    <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <KeyboardAvoidingView
+      style={[styles.root, { backgroundColor: palette.pageBg }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        contentContainerStyle={[
+          styles.scroll,
+          { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 32 },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.brand}>EarlyOn</Text>
-            <Text style={styles.title}>Create account</Text>
-            <Text style={styles.subtitle}>Join EarlyOn to get started</Text>
-          </View>
+        <View style={styles.header}>
+          <Text style={styles.brand}>
+            early<Text style={styles.brandAccent}>on</Text>
+          </Text>
+          <Text style={styles.title}>Create account</Text>
+          <Text style={styles.subtitle}>Join EarlyOn to get started</Text>
+        </View>
 
-          {/* Form */}
-          <View style={styles.form}>
-            <Input
-              label="Full Name"
-              value={fullName}
-              onChangeText={(v) => {
-                setFullName(v);
-                if (errors.fullName) setErrors((e) => ({ ...e, fullName: undefined }));
-              }}
-              placeholder="Jane Smith"
-              textContentType="name"
-              autoComplete="name"
-              returnKeyType="next"
-              onSubmitEditing={() => emailRef.current?.focus()}
-              error={errors.fullName}
-            />
+        <View style={styles.form}>
+          <Input
+            label="Full Name"
+            value={fullName}
+            onChangeText={(v) => {
+              setFullName(v);
+              if (errors.fullName) setErrors((e) => ({ ...e, fullName: undefined }));
+            }}
+            placeholder="Jane Smith"
+            textContentType="name"
+            autoComplete="name"
+            returnKeyType="next"
+            onSubmitEditing={() => emailRef.current?.focus()}
+            error={errors.fullName}
+          />
 
-            <Input
-              ref={emailRef}
-              label="Email"
-              value={email}
-              onChangeText={(v) => {
-                setEmail(v);
-                if (errors.email) setErrors((e) => ({ ...e, email: undefined }));
-              }}
-              placeholder="you@example.com"
-              keyboardType="email-address"
-              textContentType="emailAddress"
-              autoComplete="email"
-              returnKeyType="next"
-              onSubmitEditing={() => passwordRef.current?.focus()}
-              error={errors.email}
-            />
+          <Input
+            ref={emailRef}
+            label="Email"
+            value={email}
+            onChangeText={(v) => {
+              setEmail(v);
+              if (errors.email) setErrors((e) => ({ ...e, email: undefined }));
+            }}
+            placeholder="you@example.com"
+            keyboardType="email-address"
+            textContentType="emailAddress"
+            autoComplete="email"
+            returnKeyType="next"
+            onSubmitEditing={() => passwordRef.current?.focus()}
+            error={errors.email}
+          />
 
-            <Input
-              ref={passwordRef}
-              label="Password"
-              value={password}
-              onChangeText={(v) => {
-                setPassword(v);
-                if (errors.password) setErrors((e) => ({ ...e, password: undefined }));
-              }}
-              placeholder="At least 8 characters"
-              secureTextEntry={!showPassword}
-              textContentType="newPassword"
-              autoComplete="new-password"
-              returnKeyType="next"
-              onSubmitEditing={() => confirmRef.current?.focus()}
-              rightIcon={
-                <Text style={styles.showToggle}>{showPassword ? 'Hide' : 'Show'}</Text>
-              }
-              onRightIconPress={() => setShowPassword((v) => !v)}
-              error={errors.password}
-            />
+          <Input
+            ref={passwordRef}
+            label="Password"
+            value={password}
+            onChangeText={(v) => {
+              setPassword(v);
+              if (errors.password) setErrors((e) => ({ ...e, password: undefined }));
+            }}
+            placeholder="At least 8 characters"
+            secureTextEntry={!showPassword}
+            textContentType="newPassword"
+            autoComplete="new-password"
+            returnKeyType="next"
+            onSubmitEditing={() => confirmRef.current?.focus()}
+            rightIcon={
+              <Text style={styles.showToggle}>{showPassword ? 'Hide' : 'Show'}</Text>
+            }
+            onRightIconPress={() => setShowPassword((v) => !v)}
+            error={errors.password}
+          />
 
-            <Input
-              ref={confirmRef}
-              label="Confirm Password"
-              value={confirmPassword}
-              onChangeText={(v) => {
-                setConfirmPassword(v);
-                if (errors.confirmPassword)
-                  setErrors((e) => ({ ...e, confirmPassword: undefined }));
-              }}
-              placeholder="Repeat your password"
-              secureTextEntry={!showConfirm}
-              textContentType="newPassword"
-              returnKeyType="done"
-              onSubmitEditing={handleRegister}
-              rightIcon={
-                <Text style={styles.showToggle}>{showConfirm ? 'Hide' : 'Show'}</Text>
-              }
-              onRightIconPress={() => setShowConfirm((v) => !v)}
-              error={errors.confirmPassword}
-            />
+          <Input
+            ref={confirmRef}
+            label="Confirm Password"
+            value={confirmPassword}
+            onChangeText={(v) => {
+              setConfirmPassword(v);
+              if (errors.confirmPassword)
+                setErrors((e) => ({ ...e, confirmPassword: undefined }));
+            }}
+            placeholder="Repeat your password"
+            secureTextEntry={!showConfirm}
+            textContentType="newPassword"
+            returnKeyType="done"
+            onSubmitEditing={handleRegister}
+            rightIcon={
+              <Text style={styles.showToggle}>{showConfirm ? 'Hide' : 'Show'}</Text>
+            }
+            onRightIconPress={() => setShowConfirm((v) => !v)}
+            error={errors.confirmPassword}
+          />
 
-            <Button
-              label="Create Account"
-              onPress={handleRegister}
-              loading={loading}
-            />
-          </View>
+          <Button label="Create Account" onPress={handleRegister} loading={loading} />
+        </View>
 
-          {/* Footer */}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Already have an account? </Text>
-            <Link href="/(auth)/login" asChild>
-              <Pressable>
-                <Text style={styles.footerLink}>Sign In</Text>
-              </Pressable>
-            </Link>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Already have an account? </Text>
+          <Link href="/(auth)/login" asChild>
+            <Pressable>
+              <Text style={styles.footerLink}>Sign In</Text>
+            </Pressable>
+          </Link>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  flex: {
+  root: {
     flex: 1,
   },
   scroll: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 32,
-    paddingBottom: 24,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 36,
   },
   brand: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: colors.primaryDark,
-    letterSpacing: 0.5,
-    marginBottom: 24,
+    fontSize: 36,
+    fontFamily: 'Nunito-Black',
+    color: palette.dark,
+    letterSpacing: -0.5,
+    marginBottom: 28,
+  },
+  brandAccent: {
+    color: palette.rose500,
   },
   title: {
     fontSize: 26,
-    fontWeight: '700',
-    color: colors.textPrimary,
+    fontFamily: 'Nunito-ExtraBold',
+    color: palette.dark,
+    letterSpacing: -0.3,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 15,
-    color: colors.textSecondary,
+    fontFamily: 'NunitoSans-Regular',
+    color: palette.mid,
     textAlign: 'center',
   },
   form: {
@@ -245,21 +242,22 @@ const styles = StyleSheet.create({
   },
   showToggle: {
     fontSize: 14,
-    color: colors.primary,
-    fontWeight: '500',
+    fontFamily: 'NunitoSans-SemiBold',
+    color: palette.rose500,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 32,
+    marginTop: 36,
   },
   footerText: {
     fontSize: 15,
-    color: colors.textSecondary,
+    fontFamily: 'NunitoSans-Regular',
+    color: palette.mid,
   },
   footerLink: {
     fontSize: 15,
-    color: colors.primary,
-    fontWeight: '600',
+    fontFamily: 'NunitoSans-SemiBold',
+    color: palette.rose500,
   },
 });

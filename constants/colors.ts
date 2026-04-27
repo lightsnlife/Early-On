@@ -1,20 +1,24 @@
+// Compatibility shim — maps legacy key names to the new design-token palette.
+// Prefer importing from components/ui/tokens or using useTheme() in new code.
+import { palette } from '../components/ui/tokens';
+
 const colors = {
-  primary: '#2563EB',
-  primaryLight: '#EFF6FF',
-  primaryDark: '#1E3A5F',
-  accent: '#F59E0B',
-  success: '#10B981',
-  error: '#EF4444',
-  errorLight: '#FEF2F2',
-  warning: '#F59E0B',
-  background: '#F8FAFC',
-  surface: '#FFFFFF',
-  textPrimary: '#0F172A',
-  textSecondary: '#64748B',
-  textDisabled: '#CBD5E1',
-  border: '#E2E8F0',
-  borderFocus: '#2563EB',
-  overlay: 'rgba(0, 0, 0, 0.5)',
+  primary:       palette.rose500,
+  primaryLight:  palette.rose50,
+  primaryDark:   palette.lavender500,
+  accent:        palette.butter400,
+  success:       palette.mint400,
+  error:         palette.rose500,
+  errorLight:    palette.rose50,
+  warning:       palette.butter400,
+  background:    palette.pageBg,
+  surface:       palette.cardBg,
+  textPrimary:   palette.dark,
+  textSecondary: palette.mid,
+  textDisabled:  palette.soft,
+  border:        'rgba(139,117,212,0.12)' as const,
+  borderFocus:   palette.rose500,
+  overlay:       'rgba(44,36,56,0.5)' as const,
 } as const;
 
 export default colors;

@@ -1,6 +1,8 @@
 import React, { useCallback, useRef, useState } from 'react';
 import {
   Alert,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -9,14 +11,15 @@ import {
   View,
 } from 'react-native';
 import { Link, Redirect } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import colors from '@/constants/colors';
+import { palette } from '@/components/ui/tokens';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginScreen() {
   const { status, signIn } = useAuth();
+  const insets = useSafeAreaInsets();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,8 +27,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const passwordRef = useRef<TextInput>(null);
 
-  if (status === 'authenticated') return <Redirect href="/(app)/home" />;
-
+  // All hooks must be declared before any conditional return
   const handleSignIn = useCallback(async () => {
     if (!email.trim() || !password) {
       Alert.alert('Missing fields', 'Please enter your email and password.');
@@ -41,18 +43,27 @@ export default function LoginScreen() {
     }
   }, [email, password, signIn]);
 
+  if (status === 'authenticated') return <Redirect href="/(app)/home" />;
+
   return (
-    <SafeAreaView style={styles.safe}>
+    <KeyboardAvoidingView
+      style={[styles.root, { backgroundColor: palette.pageBg }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <ScrollView
-        contentContainerStyle={styles.scroll}
+        contentContainerStyle={[
+          styles.scroll,
+          { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 32 },
+        ]}
         keyboardShouldPersistTaps="handled"
-        automaticallyAdjustKeyboardInsets={true}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={styles.brand}>EarlyOn</Text>
-          <Text style={styles.title}>Sign in</Text>
-          <Text style={styles.subtitle}>Enter your credentials to continue</Text>
+          <Text style={styles.brand}>
+            early<Text style={styles.brandAccent}>on</Text>
+          </Text>
+          <Text style={styles.title}>Welcome back</Text>
+          <Text style={styles.subtitle}>Sign in to continue your journey</Text>
         </View>
 
         <View style={styles.form}>
@@ -101,41 +112,43 @@ export default function LoginScreen() {
           </Link>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: {
+  root: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   scroll: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 32,
-    paddingBottom: 24,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 36,
+    marginBottom: 40,
   },
   brand: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: colors.primaryDark,
-    letterSpacing: 0.5,
-    marginBottom: 24,
+    fontSize: 36,
+    fontFamily: 'Nunito-Black',
+    color: palette.dark,
+    letterSpacing: -0.5,
+    marginBottom: 28,
+  },
+  brandAccent: {
+    color: palette.rose500,
   },
   title: {
     fontSize: 26,
-    fontWeight: '700',
-    color: colors.textPrimary,
+    fontFamily: 'Nunito-ExtraBold',
+    color: palette.dark,
+    letterSpacing: -0.3,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 15,
-    color: colors.textSecondary,
+    fontFamily: 'NunitoSans-Regular',
+    color: palette.mid,
     textAlign: 'center',
     lineHeight: 22,
   },
@@ -144,8 +157,8 @@ const styles = StyleSheet.create({
   },
   showToggle: {
     fontSize: 14,
-    color: colors.primary,
-    fontWeight: '500',
+    fontFamily: 'NunitoSans-SemiBold',
+    color: palette.rose500,
   },
   forgotRow: {
     alignSelf: 'flex-end',
@@ -154,21 +167,22 @@ const styles = StyleSheet.create({
   },
   forgotText: {
     fontSize: 14,
-    color: colors.primary,
-    fontWeight: '500',
+    fontFamily: 'NunitoSans-SemiBold',
+    color: palette.rose500,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 32,
+    marginTop: 36,
   },
   footerText: {
     fontSize: 15,
-    color: colors.textSecondary,
+    fontFamily: 'NunitoSans-Regular',
+    color: palette.mid,
   },
   footerLink: {
     fontSize: 15,
-    color: colors.primary,
-    fontWeight: '600',
+    fontFamily: 'NunitoSans-SemiBold',
+    color: palette.rose500,
   },
 });

@@ -8,7 +8,7 @@ import {
   ViewStyle,
   type PressableProps,
 } from 'react-native';
-import colors from '@/constants/colors';
+import { palette } from '../ui/tokens';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
@@ -45,7 +45,7 @@ export default function Button({
       {...props}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? colors.surface : colors.primary} />
+        <ActivityIndicator color={variant === 'primary' || variant === 'danger' ? '#fff' : palette.rose500} />
       ) : (
         <Text style={[styles.label, styles[`${variant}Label`]]}>{label}</Text>
       )}
@@ -55,52 +55,46 @@ export default function Button({
 
 const styles = StyleSheet.create({
   base: {
-    paddingVertical: 14,
+    paddingVertical: 16,
     paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 52,
   },
-  fullWidth: {
-    width: '100%',
-  },
-  pressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.98 }],
-  },
-  disabled: {
-    opacity: 0.5,
-  },
+  fullWidth: { width: '100%' },
+  pressed:  { opacity: 0.82, transform: [{ scale: 0.98 }] },
+  disabled: { opacity: 0.45 },
+
   primary: {
-    backgroundColor: colors.primary,
+    backgroundColor: palette.rose500,
+    shadowColor: palette.rose500,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35,
+    shadowRadius: 20,
+    elevation: 8,
   },
   secondary: {
-    backgroundColor: colors.primaryLight,
-    borderWidth: 1,
-    borderColor: colors.primary,
+    backgroundColor: palette.lavender50,
+    borderWidth: 1.5,
+    borderColor: 'rgba(139,117,212,0.25)',
   },
   ghost: {
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(255,255,255,0.72)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(139,117,212,0.18)',
   },
   danger: {
-    backgroundColor: colors.error,
+    backgroundColor: palette.rose600,
   },
+
   label: {
     fontSize: 16,
-    fontWeight: '600',
-    letterSpacing: 0.3,
+    fontFamily: 'Nunito-ExtraBold',
+    letterSpacing: 0.2,
   },
-  primaryLabel: {
-    color: colors.surface,
-  },
-  secondaryLabel: {
-    color: colors.primary,
-  },
-  ghostLabel: {
-    color: colors.primary,
-  },
-  dangerLabel: {
-    color: colors.surface,
-  },
+  primaryLabel:   { color: '#ffffff' },
+  secondaryLabel: { color: palette.lavender400 },
+  ghostLabel:     { color: palette.mid },
+  dangerLabel:    { color: '#ffffff' },
 });
