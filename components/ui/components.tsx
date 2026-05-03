@@ -16,6 +16,9 @@
  */
 
 import React from 'react';
+import { cardColors, type CardColorKey } from '@/constants/colors';
+import { getMenuIcon } from '@/constants/iconRegistry';
+import EmojiIcon from '@/components/ui/EmojiIcon';
 import {
   Text,
   TextProps,
@@ -124,7 +127,7 @@ export function EButton({
       borderColor: 'rgba(139,117,212,0.18)',
     },
     soft: {
-      backgroundColor: colors.lavender50,
+      backgroundColor: cardColors.lavender.bg,
     },
   }[variant] as object;
 
@@ -194,44 +197,48 @@ export function ECard({
 }
 
 // ─── EChip ──────────────────────────────────────────────────────────────────
-type ChipColor = 'lavender' | 'mint' | 'butter' | 'rose' | 'peach' | 'sky';
+type ChipColor = CardColorKey;
 
 interface EChipProps {
   label: string;
   color?: ChipColor;
+  bgColor?: string;
+  textColor?: string;
   size?: 'sm' | 'md';
+  onPress?: () => void;
+  selected?: boolean;
 }
 
-const chipColors: Record<ChipColor, { bg: string; text: string }> = {
-  lavender: { bg: '#EDE8FB', text: '#8B75D4' },
-  mint:     { bg: '#E6F5F0', text: '#4BB89B' },
-  butter:   { bg: '#FEF5E0', text: '#A07A10' },
-  rose:     { bg: '#FDEDF2', text: '#D4537E' },
-  peach:    { bg: '#FDEEE8', text: '#E8906A' },
-  sky:      { bg: '#E5F1FA', text: '#5FA3D4' },
-};
-
-export function EChip({ label, color = 'lavender', size = 'md' }: EChipProps) {
+export function EChip({ label, color = 'lavender', bgColor, textColor, size = 'md', onPress, selected }: EChipProps) {
   const { radii } = useTheme();
-  const { bg, text } = chipColors[color];
-  return (
-    <View
-      style={{
-        backgroundColor: bg,
-        borderRadius: radii.full,
-        paddingHorizontal: size === 'sm' ? 10 : 14,
-        paddingVertical:   size === 'sm' ?  4 :  6,
-        alignSelf: 'flex-start',
-      }}
-    >
-      <EText
-        variant={size === 'sm' ? 'labelSm' : 'label'}
-        color={text}
-      >
-        {label}
-      </EText>
-    </View>
+  const { bg, text } = cardColors[color];
+  const resolvedBg   = bgColor   ?? bg;
+  const resolvedText = textColor ?? text;
+
+  const chipStyle = {
+    backgroundColor: resolvedBg,
+    borderRadius: radii.full,
+    paddingHorizontal: size === 'sm' ? 10 : 14,
+    paddingVertical:   size === 'sm' ?  4 :  6,
+    alignSelf: 'flex-start' as const,
+    transform: selected ? [{ scale: 1.25 }] : undefined,
+  };
+
+  const content = (
+    <EText variant={size === 'sm' ? 'labelSm' : 'label'} color={resolvedText}>
+      {label}
+    </EText>
   );
+
+  if (onPress) {
+    return (
+      <TouchableOpacity activeOpacity={0.75} onPress={onPress} style={chipStyle}>
+        {content}
+      </TouchableOpacity>
+    );
+  }
+
+  return <View style={chipStyle}>{content}</View>;
 }
 
 // ─── CategoryCard ───────────────────────────────────────────────────────────
@@ -253,7 +260,8 @@ export function CategoryCard({
   onPress,
 }: CategoryCardProps) {
   const { spacing, radii } = useTheme();
-  const { bg } = chipColors[color];
+  const { bg } = cardColors[color];
+  const emoji = getMenuIcon(icon);
 
   return (
     <TouchableOpacity
@@ -267,7 +275,7 @@ export function CategoryCard({
         gap: spacing[1.5],
       }}
     >
-      <EText style={{ fontSize: 28, lineHeight: 34 }}>{icon}</EText>
+      <EmojiIcon emoji={emoji} size={28} />
       <EText variant="h4">{name}</EText>
       <EText variant="bodySm" color="#6B6380">{subtitle}</EText>
     </TouchableOpacity>
